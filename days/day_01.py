@@ -5,7 +5,8 @@ from typing import List, Tuple
 def read_data(file: str) -> Tuple[List[int], List[int]]:
     """
     Reads a file containing pairs of integers on each line, separated by whitespace,
-    and returns two lists: one with the first integers of each pair and another with the second integers.
+    and returns two lists: one with the first integers of each pair
+    and another with the second integers.
 
     Args:
         file (str): The path to the input file. Each line in the file should contain two integers
@@ -16,7 +17,7 @@ def read_data(file: str) -> Tuple[List[int], List[int]]:
             - The first list contains the first integers from each line.
             - The second list contains the second integers from each line.
     """
-    with open(file, "r") as fp:
+    with open(file, "r", encoding="UTF-8") as fp:
         data = fp.readlines()
 
     left, right = zip(*(map(int, line.split()) for line in data))
@@ -33,7 +34,8 @@ def total_distance_diff(left: List[int], right: List[int]) -> int:
         right (List[int]): A list of integers representing the second set of values.
 
     Returns:
-        int: The sum of the absolute differences between corresponding elements of the two sorted lists.
+        int: The sum of the absolute differences between corresponding elements
+        of the two sorted lists.
     """
     left = sorted(left)
     right = sorted(right)
