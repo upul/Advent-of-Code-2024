@@ -19,6 +19,45 @@ def validate_grid(grid):
     return True
 
 
+def part_two(grid):
+    def validate(row, col):
+        def valid_move(row, col):
+            return 0 <= row < m and 0 <= col < n
+
+        pos_direction = [(1, 1), (-1, -1)]
+        valid_pos_dir = [
+            grid[(row + y)][(col + x)]
+            for x, y in pos_direction
+            if valid_move(row + y, col + x)
+        ]
+
+        neg_direction = [(-1, 1), (1, -1)]
+        valid_neg_dir = [
+            grid[(row + y)][(col + x)]
+            for x, y in neg_direction
+            if valid_move(row + y, col + x)
+        ]
+        if len(valid_pos_dir) != 2 or len(valid_neg_dir) != 2:
+            return 0
+
+        pos_word = valid_pos_dir[0] + "A" + valid_pos_dir[1]
+        neg_word = valid_neg_dir[0] + "A" + valid_neg_dir[1]
+        if pos_word in ["MAS", "SAM"] and neg_word in ["MAS", "SAM"]:
+            return 1
+        return 0
+
+    m = len(grid)
+    n = len(grid[0])
+
+    num_valid_words = 0
+    for row in range(m):
+        for col in range(n):
+            curr_char = grid[row][col]
+            if curr_char == "A":
+                num_valid_words += validate(row, col)
+    return num_valid_words
+
+
 def part_one(grid):
     def validate(row, col):
         def valid_move(row, col):
@@ -80,4 +119,9 @@ MXMXAXMASX
 
     test_data = parse(read_file("./data/day_04.txt"))
     valid_words = part_one(test_data)
+    print(valid_words)
+
+    valid_words = part_two(grid)
+    print(valid_words)
+    valid_words = part_two(test_data)
     print(valid_words)
