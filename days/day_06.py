@@ -1,3 +1,6 @@
+from utilities.file_io import read_file
+
+
 def build_grid(text):
 
     return [
@@ -31,30 +34,40 @@ def is_not_end(row, col, m, n):
     return 0 <= row < m and 0 <= col < n
 
 
-def move(grid, row, col):
-    directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
-    curr_iter = 0
-    num_cells = 0
-    unique_positions = set()
+def next_move(curr_row, curr_col, curr_dir, grid):
+    def _is_valid(row, col, m, n):
+        return 0 <= row < m and 0 <= col < n
+
+    dir_delta = [(0, -1), (1, 0), (0, 1), (-1, 0)]
     m, n = len(grid), len(grid[0])
 
-    while is_not_end(row, col, m, n):
-        dx, dy = directions[curr_iter % 4]
-        new_row, new_col = row + dy, col + dx
-        if not is_not_end(new_row, new_col, m, n):
+    dx, dy = dir_delta[curr_dir % 4]
+    new_row, new_col = curr_row + dy, curr_col + dx
+
+    valid = _is_valid(new_row, new_col, m, n)
+    if not valid:
+        return -1, -1, False, curr_dir
+
+    curr_cell = grid[new_row][new_col]
+    if curr_cell == "#":
+        curr_dir += 1
+        dx, dy = dir_delta[curr_dir % 4]
+        new_row, new_col = curr_row + dy, curr_col + dx
+
+    return new_row, new_col, True, curr_dir
+
+
+def move(grid, row, col):
+    curr_dir = 0
+    unique_positions = {(row, col)}
+
+    while True:
+        new_row, new_col, move_flag, curr_dir = next_move(row, col, curr_dir, grid)
+        if not move_flag:
             break
-
-        if grid[new_row][new_col] == "#":
-            # move right
-            curr_iter += 1
-        else:
-            row, col = new_row, new_col
-            unique_positions.add((row, col))
-
-            # Just for debugging
-            grid[row][col] = "*"
-            num_cells += 1
-
+        unique_positions.add((new_row, new_col))
+        row, col = new_row, new_col
+        grid[row][col] = "x"
     return len(unique_positions)
 
 
@@ -85,3 +98,13 @@ if __name__ == "__main__":
     print("Final Grid")
     print("====================")
     print(print_grid(grid))
+
+    print("Running the puzzle input")
+    puzzle_text = read_file("./data/day_06.txt")
+    puzzle_grid = build_grid(puzzle_text)
+    # print(print_grid(puzzle_grid))
+    start_x, start_y = starting_coordinates(puzzle_grid)
+    print(start_x, start_y)
+    puzzle_distinct_moves = move(puzzle_grid, start_x, start_y)
+    print(puzzle_distinct_moves)
+    # print(print_grid(puzzle_grid))
